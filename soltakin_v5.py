@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import os
 from datetime import datetime
-from streamlit_autorefresh import st_autorefresh
+#from streamlit_autorefresh import st_autorefresh
 
 # =========================
 # BASE PATH (FIXED)
