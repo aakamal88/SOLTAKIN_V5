@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import json
 import os
-#from streamlit_autorefresh import st_autorefresh
+from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 import folium
 from streamlit_folium import st_folium
@@ -638,7 +638,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    #auto_refresh()
+    st_autorefresh(interval=5000, key="dashboard_refresh")
     data = get_data()
     cfg = get_config()
 
