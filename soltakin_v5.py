@@ -25,7 +25,7 @@ from features.alarm.notification import render_notification
 st.set_page_config(page_title="BMS App", layout="wide")
 
 # 🔥 AUTO REFRESH (OPTIMIZED)
-st_autorefresh(interval=5000, key="system_clock")
+#st_autorefresh(interval=5000, key="system_clock")
 
 # =========================
 # FILE PATH CONFIG
