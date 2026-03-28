@@ -68,8 +68,8 @@ def render_detail():
     series = cfg["series"]
 
     voltages = normalize(data["cell_voltage"], series, cfg["voltage"])
-    temps = normalize(data["cell_temperature"], series, 30)
-    liquids = normalize(data["cell_liquid"], series, 80)
+    temps = normalize(data["cell_temperature"], series, 45)
+    liquids = normalize(data["cell_liquid"], series, 100)
 
     st.title("🔍 Detail Monitoring")
 
