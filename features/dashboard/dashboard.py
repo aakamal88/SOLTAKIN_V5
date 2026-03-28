@@ -468,10 +468,21 @@ def create_folium_map(sites, style):
     # MARKER
     # =========================
     for s in sites:
-        status, _ = get_status(s["soc"], "soc")
-        status, _ = get_status(s["soh"], "soh")
-        status, _ = get_status(s["ir"], "ir")
-        status, _ = get_status(s["temp"], "temp")
+        statuses = [
+            get_status(s["soc"], "soc")[0],
+            get_status(s["soh"], "soh")[0],
+            get_status(s["ir"], "ir")[0],
+            get_status(s["temp"], "temp")[0],
+        ]
+
+        priority = {
+            "GOOD": 0,
+            "WARNING": 1,
+            "CRITICAL": 2,
+            "ALERT": 3
+        }
+
+        status = max(statuses, key=lambda x: priority[x])
 
         color_map = {
             "GOOD": "green",
