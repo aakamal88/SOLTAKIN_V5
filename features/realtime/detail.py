@@ -71,24 +71,19 @@ def render_detail():
     temps = normalize(data["cell_temperature"], series, 30)
     liquids = normalize(data["cell_liquid"], series, 80)
 
-    st.title("🔍 Detail Monitoring")
+    st.title("🔍 Realtime Cells Monitoring")
 
     # =========================
     # BACK BUTTON
     # =========================
     st.link_button("⬅️ Back to Dashboard", "http://localhost:8501")
 
-    # =========================
-    # VOLTAGE
-    # =========================
-    st.markdown("---")
-    st.subheader("🔋 Cell Voltage Monitoring")
 
     # =========================
     # VOLTAGE
     # =========================
     st.markdown("---")
-    st.subheader("🔋 Cell Voltage Monitoring")
+    st.subheader("🔋 Cells Voltage Monitoring")
 
     fig = go.Figure(data=[go.Bar(
         x=[f"C{i + 1}" for i in range(len(voltages))],
@@ -109,7 +104,7 @@ def render_detail():
     # =========================
     # TEMPERATURE
     # =========================
-    st.subheader("🌡 Cell Temperature Monitoring")
+    st.subheader("🌡 Cells Temperature Monitoring")
 
     fig_temp = go.Figure(data=[go.Scatter(
         x=[f"C{i + 1}" for i in range(len(temps))],
@@ -131,7 +126,7 @@ def render_detail():
     # =========================
     # LIQUID
     # =========================
-    st.subheader("🧪 Cell Liquid Level Monitoring")
+    st.subheader("🧪 Cells Liquid Level Monitoring")
 
     fig_liquid = go.Figure(data=[go.Bar(
         x=[f"C{i + 1}" for i in range(len(liquids))],
