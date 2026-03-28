@@ -106,7 +106,7 @@ def get_alarm_setting():
 
 
 def auto_refresh():
-    st_autorefresh(interval=2000, key="refresh")
+    #st_autorefresh(interval=2000, key="refresh")
 
 
 def get_data():
@@ -638,7 +638,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    auto_refresh()
+    #auto_refresh()
     data = get_data()
     cfg = get_config()
 
