@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import json
 import os
-from streamlit_autorefresh import st_autorefresh
+#from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 import folium
 from streamlit_folium import st_folium
