@@ -1,0 +1,115 @@
+{
+    "data": {
+        "soc": 80.0,
+        "soh": 90.0,
+        "ir": 1.9,
+        "temp": 38.0,
+        "ambient": 45,
+        "pressure": 800,
+        "capacity": 120.0,
+        "cycle": 1000,
+        "current": 20.0,
+        "status": "Idle",
+        "cell_voltage": [
+            1.25,
+            1.0,
+            1.33,
+            1.39,
+            1.4
+        ],
+        "cell_temperature": [
+            25,
+            28,
+            30,
+            23,
+            22
+        ],
+        "cell_liquid": [
+            80,
+            80,
+            80,
+            80,
+            80
+        ],
+        "table_soc": [
+            80,
+            80,
+            80,
+            80,
+            80
+        ],
+        "table_soh": [
+            90,
+            90,
+            90,
+            90,
+            90
+        ],
+        "table_rint": [
+            2.0,
+            1.5,
+            2.0,
+            2.0,
+            2.0
+        ],
+        "table_temp": [
+            40,
+            40,
+            40,
+            40,
+            30
+        ],
+        "table_lvl": [
+            80,
+            80,
+            80,
+            80,
+            80
+        ]
+    },
+    "battery_config": {
+        "chemical": "NiCd",
+        "model": "VTX-1M-150",
+        "series": 5,
+        "voltage": 1.42,
+        "capacity": "150 Ah",
+        "resistance": "0.76 m\u03a9"
+    },
+    "alarm_setting": {
+        "soc": {
+            "warning": 52,
+            "critical": 20,
+            "alert": 15
+        },
+        "soh": {
+            "warning": 80,
+            "critical": 50,
+            "alert": 30
+        },
+        "ir": {
+            "warning": 1.1,
+            "critical": 1.5,
+            "alert": 1.8
+        },
+        "temp": {
+            "warning": 35,
+            "critical": 45,
+            "alert": 55
+        },
+        "ambient": {
+            "warning": 30,
+            "critical": 40,
+            "alert": 50
+        },
+        "current": {
+            "warning": 50,
+            "critical": 80,
+            "alert": 100
+        },
+        "voltage": {
+            "warning": 48,
+            "critical": 44,
+            "alert": 40
+        }
+    }
+}
