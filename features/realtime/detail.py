@@ -68,8 +68,8 @@ def render_detail():
     series = cfg["series"]
 
     voltages = normalize(data["cell_voltage"], series, cfg["voltage"])
-    temps = normalize(data["cell_temperature"], series, 45)
-    liquids = normalize(data["cell_liquid"], series, 100)
+    temps = normalize(data["cell_temperature"], series, 30)
+    liquids = normalize(data["cell_liquid"], series, 80)
 
     st.title("🔍 Detail Monitoring")
 
@@ -84,12 +84,24 @@ def render_detail():
     st.markdown("---")
     st.subheader("🔋 Cell Voltage Monitoring")
 
+    # =========================
+    # VOLTAGE
+    # =========================
+    st.markdown("---")
+    st.subheader("🔋 Cell Voltage Monitoring")
+
+    fig = go.Figure(data=[go.Bar(
+        x=[f"C{i + 1}" for i in range(len(voltages))],
+        y=voltages,
+        marker_color=[voltage_color(v) for v in voltages]
+    )])
+
+    fig.update_layout(
+        yaxis=dict(range=[0, 1.6])
+    )
+
     st.plotly_chart(
-        go.Figure(data=[go.Bar(
-            x=[f"C{i+1}" for i in range(len(voltages))],
-            y=voltages,
-            marker_color=[voltage_color(v) for v in voltages]
-        )]),
+        fig,
         use_container_width=True,
         key=f"cell_voltage_{len(voltages)}"
     )
@@ -99,12 +111,19 @@ def render_detail():
     # =========================
     st.subheader("🌡 Cell Temperature Monitoring")
 
+    fig_temp = go.Figure(data=[go.Scatter(
+        x=[f"C{i + 1}" for i in range(len(temps))],
+        y=temps,
+        mode="lines+markers"
+    )])
+
+    # SET RANGE
+    fig_temp.update_layout(
+        yaxis=dict(range=[15, 50])  # sesuaikan kebutuhan
+    )
+
     st.plotly_chart(
-        go.Figure(data=[go.Scatter(
-            x=[f"C{i+1}" for i in range(len(temps))],
-            y=temps,
-            mode="lines+markers"
-        )]),
+        fig_temp,
         use_container_width=True,
         key=f"cell_temp_{len(temps)}"
     )
@@ -114,11 +133,18 @@ def render_detail():
     # =========================
     st.subheader("🧪 Cell Liquid Level Monitoring")
 
+    fig_liquid = go.Figure(data=[go.Bar(
+        x=[f"C{i + 1}" for i in range(len(liquids))],
+        y=liquids
+    )])
+
+    # SET RANGE
+    fig_liquid.update_layout(
+        yaxis=dict(range=[0, 100])
+    )
+
     st.plotly_chart(
-        go.Figure(data=[go.Bar(
-            x=[f"C{i+1}" for i in range(len(liquids))],
-            y=liquids
-        )]),
+        fig_liquid,
         use_container_width=True,
         key=f"cell_liquid_{len(liquids)}"
     )
