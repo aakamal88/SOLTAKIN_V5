@@ -2,6 +2,8 @@ import streamlit as st
 import plotly.graph_objects as go
 import json
 import os
+import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SETTINGS_FILE = os.path.join(ROOT_DIR, "config", "settings.json")
@@ -59,6 +61,7 @@ def voltage_color(v):
 # =========================
 def render_detail():
 
+    st_autorefresh(interval=1000, key="detail_refresh")  # 5 detik
     data = get_data()
     cfg = get_config()
 
