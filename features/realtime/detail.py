@@ -61,7 +61,7 @@ def voltage_color(v):
 # =========================
 def render_detail():
 
-    st_autorefresh(interval=1000, key="detail_refresh")  # 5 detik
+    st_autorefresh(interval=100, key="detail_refresh")  # 5 detik
     data = get_data()
     cfg = get_config()
 
