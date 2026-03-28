@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+from streamlit_autorefresh import st_autorefresh
 
 BROKER = "broker.hivemq.com"
 TOPIC = "soltakin/battery"
@@ -57,13 +58,18 @@ def avg(arr, default=0):
 # =========================
 def render_analyze():
 
-    st.title("🧠 Analyze Input (Realtime Mode)")
-
+    st_autorefresh(interval=1000, key="detail_refresh")  # 5 detik
+    st.title("🧠 Data Input From Controller ")
     settings = load()
     data = settings.get("data", {})
     config = settings.get("battery_config", {})
 
     series = config.get("series", 10)
+
+    # =========================
+    # BACK BUTTON
+    # =========================
+    st.link_button("⬅️ Back to Dashboard", "http://localhost:8501")
 
     # =========================
     # 🔥 COMPUTE FROM SAVED DATA
@@ -84,7 +90,7 @@ def render_analyze():
     # =========================
     # 🔝 TOP DISPLAY
     # =========================
-    st.subheader("📈 Battery System Performance")
+    st.subheader("📈 Battery System Performance Prediction")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -101,7 +107,7 @@ def render_analyze():
     ambient = st.slider("Ambient", 0, 50, data.get("ambient", 28))
     pressure = st.slider("Pressure", 700, 800, data.get("pressure", 760))
 
-    st.subheader("Additional Parameters")
+    st.subheader("Calculation Parameters")
 
     capacity = st.number_input("Remaining Capacity (Ah)", value=float(data.get("capacity", 21.64)))
     cycle = st.number_input("Cycle Count", value=int(data.get("cycle", 1)), step=1)
@@ -117,7 +123,7 @@ def render_analyze():
     # CELL PARAMETER
     # =========================
     st.markdown("---")
-    st.subheader("🔋 Cell Parameters")
+    st.subheader("🔋 Cell Parameters Reading")
 
     voltages, temps, liquids = [], [], []
 
@@ -151,7 +157,7 @@ def render_analyze():
     # TABLE INPUT
     # =========================
     st.markdown("---")
-    st.subheader("📊 Table Parameter Input")
+    st.subheader("📊 Cell Performance Prediction")
 
     table_soc, table_soh, table_rint, table_temp, table_lvl = [], [], [], [], []
 
