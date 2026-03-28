@@ -106,7 +106,7 @@ def get_alarm_setting():
 
 
 def auto_refresh():
-    #st_autorefresh(interval=2000, key="refresh")
+    pass
 
 
 def get_data():
@@ -467,22 +467,11 @@ def create_folium_map(sites, style):
     # =========================
     # MARKER
     # =========================
-    def get_combined_status(s):
-    statuses = []
-
-    for key in ["soc", "soh", "ir", "temp"]:
-        val = s.get(key, 0)
-        label, _ = get_status(val, key)
-        statuses.append(label)
-
-    if "ALERT" in statuses:
-        return "ALERT"
-    elif "CRITICAL" in statuses:
-        return "CRITICAL"
-    elif "WARNING" in statuses:
-        return "WARNING"
-    else:
-        return "GOOD"
+    for s in sites:
+        status, _ = get_status(s["soc"], "soc")
+        status, _ = get_status(s["soh"], "soh")
+        status, _ = get_status(s["ir"], "ir")
+        status, _ = get_status(s["temp"], "temp")
 
         color_map = {
             "GOOD": "green",

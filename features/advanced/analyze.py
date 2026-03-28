@@ -1,7 +1,7 @@
 import streamlit as st
 import json
 import os
-#import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt
 
 BROKER = "broker.hivemq.com"
 TOPIC = "soltakin/battery"
@@ -235,4 +235,4 @@ def render_analyze():
         "battery_config": load().get("battery_config", {})
     }
 
-    #publish_mqtt(payload)
+    publish_mqtt(payload)
