@@ -507,7 +507,8 @@ def create_folium_map(sites, style):
         style_function=lambda x: {
             "fillColor": "transparent",
             "color": "blue",
-            "weight": 5
+            "weight": 3,
+            "dashArray": "13, 13"
         }
     ).add_to(m)
 
@@ -516,7 +517,8 @@ def create_folium_map(sites, style):
         style_function=lambda x: {
             "fillColor": "transparent",
             "color": "blue",
-            "weight": 5
+            "weight": 3,
+            "dashArray": "13, 13"
         }
     ).add_to(m)
 
@@ -525,7 +527,8 @@ def create_folium_map(sites, style):
         style_function=lambda x: {
             "fillColor": "transparent",
             "color": "red",
-            "weight": 5
+            "weight": 3,
+            "dashArray": "13, 13"
         }
     ).add_to(m)
 
