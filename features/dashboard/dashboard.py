@@ -55,11 +55,16 @@ st.markdown("""
     50% {transform: scale(1.3);}
     100% {transform: scale(1);}
 }
-.blink-critical {
-    animation: blink 1s infinite !important;
-}
 .blink-alert {
-    animation: blink 0.5s infinite !important;
+    animation: blink 0.4s infinite, pulse 0.6s infinite !important;
+    text-shadow: 0 0 6px red;
+}
+.blink-critical {
+    animation: blink 0.8s infinite !important;
+    text-shadow: 0 0 4px orange;
+}
+.blink-warning {
+    animation: blink 1.5s infinite !important;
 }
 .marker-blink {
     animation: blink 1s infinite, pulse 1s infinite;
@@ -242,10 +247,52 @@ def render_cell_tables(series, data):
                 for p, v, u in zip(table_data["Parameter"], table_data["Value"], table_data["Unit"]):
                     color = get_cell_color(p, v)
 
+                    # =========================
+                    # 🚨 DETECT STATUS (UNTUK BLINK)
+                    # =========================
+                    blink_class = ""
+
+                    try:
+                        val = float(v)
+
+                        if p == "SoC":
+                            if val < 10:
+                                blink_class = "blink-alert"
+                            elif val < 20:
+                                blink_class = "blink-critical"
+                            elif val < 50:
+                                blink_class = "blink-warning"
+
+                        elif p == "SoH":
+                            if val < 30:
+                                blink_class = "blink-alert"
+                            elif val < 50:
+                                blink_class = "blink-critical"
+                            elif val < 80:
+                                blink_class = "blink-warning"
+
+                        elif p == "Rint":
+                            if val > 1.8:
+                                blink_class = "blink-alert"
+                            elif val > 1.5:
+                                blink_class = "blink-critical"
+                            elif val > 1.1:
+                                blink_class = "blink-warning"
+
+                        elif p == "Temp":
+                            if val > 48:
+                                blink_class = "blink-alert"
+                            elif val > 45:
+                                blink_class = "blink-critical"
+                            elif val > 35:
+                                blink_class = "blink-warning"
+
+                    except:
+                        pass
+
                     rows_html += f"""
                     <tr>
-                        <td style="padding:6px;">{p}</td>
-                        <td style="
+                        <td class="{blink_class}" style="
                             padding:6px;
                             text-align:right;
                             font-weight:600;
@@ -456,11 +503,11 @@ def create_folium_map(sites, style):
     folium.TileLayer("OpenStreetMap").add_to(m)
 
     folium.GeoJson(
-        "map/map_type1.geojson",
+        "map/owja.geojson",
         style_function=lambda x: {
             "fillColor": "transparent",
-            "color": "cyan",
-            "weight": 2
+            "color": "blue",
+            "weight": 5
         }
     ).add_to(m)
 
@@ -649,7 +696,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    st_autorefresh(interval=2500, key="dashboard_refresh")
+    st_autorefresh(interval=5000, key="dashboard_refresh")
     data = get_data()
     cfg = get_config()
 
