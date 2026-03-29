@@ -524,7 +524,7 @@ def create_folium_map(sites, style):
         "map/smg_btg.geojson",
         style_function=lambda x: {
             "fillColor": "transparent",
-            "color": "yellow",
+            "color": "red",
             "weight": 5
         }
     ).add_to(m)
