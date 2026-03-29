@@ -5,12 +5,9 @@ import os
 # =========================
 # BASE PATH (ROOT PROJECT)
 # =========================
-ROOT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+LOCATION_FILE = os.path.join(ROOT_DIR, "config", "ptg_location.json")
 
-CONFIG_DIR = os.path.join(ROOT_DIR, "config")
-LOCATION_FILE = os.path.join(CONFIG_DIR, "ptg_location.json")
 # =========================
 # CONSTANT DATA
 # =========================
@@ -43,7 +40,7 @@ def load_location():
 # =========================
 def save_location(data):
     try:
-        os.makedirs(CONFIG_DIR, exist_ok=True)
+        os.makedirs(ROOT_DIR, exist_ok=True)
 
         with open(LOCATION_FILE, "w") as f:
             json.dump(data, f, indent=4)
