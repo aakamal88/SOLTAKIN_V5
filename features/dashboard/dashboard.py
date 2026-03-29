@@ -504,7 +504,6 @@ def create_folium_map(sites, style):
 
     folium.GeoJson(
         "map/owja.geojson",
-        "map/map_type1.geojson",
         style_function=lambda x: {
             "fillColor": "transparent",
             "color": "blue",
