@@ -520,6 +520,16 @@ def create_folium_map(sites, style):
         }
     ).add_to(m)
 
+    folium.GeoJson(
+        "map/smg_btg.geojson",
+        style_function=lambda x: {
+            "fillColor": "transparent",
+            "color": "yellow",
+            "weight": 5
+        }
+    ).add_to(m)
+
+
     # =========================
     # MARKER
     # =========================
