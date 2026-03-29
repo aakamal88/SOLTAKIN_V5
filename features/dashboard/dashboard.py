@@ -512,6 +512,15 @@ def create_folium_map(sites, style):
         }
     ).add_to(m)
 
+        folium.GeoJson(
+        "map/map_type1.geojson",
+        style_function=lambda x: {
+            "fillColor": "transparent",
+            "color": "black",
+            "weight": 3
+        }
+    ).add_to(m)
+
     # =========================
     # MARKER
     # =========================
