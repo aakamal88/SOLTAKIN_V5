@@ -292,6 +292,15 @@ def render_cell_tables(series, data):
 
                     rows_html += f"""
                     <tr>
+                        <td style="
+                            padding:6px;
+                            text-align:left;
+                            color:#374151;
+                            font-weight:500;
+                        ">
+                            {p}
+                        </td>
+
                         <td class="{blink_class}" style="
                             padding:6px;
                             text-align:right;
@@ -300,6 +309,7 @@ def render_cell_tables(series, data):
                         ">
                             {v}
                         </td>
+
                         <td style="padding:6px;text-align:right;color:#9ca3af;">
                             {u}
                         </td>
@@ -528,10 +538,9 @@ def create_folium_map(sites, style):
             "fillColor": "transparent",
             "color": "red",
             "weight": 3,
-            "dashArray": "13, 13"
+            "dashArray": "5, 5"
         }
     ).add_to(m)
-
 
     # =========================
     # MARKER
@@ -718,7 +727,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    st_autorefresh(interval=60000, key="dashboard_refresh")
+    st_autorefresh(interval=5000, key="dashboard_refresh")
     data = get_data()
     cfg = get_config()
 
