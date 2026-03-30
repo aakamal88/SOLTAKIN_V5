@@ -5,5 +5,5 @@ plotly
 pandas
 streamlit-autorefresh
 streamlit-extras
-pymodbus==3.x.x
+pymodbus==3.6.8
 psutil
