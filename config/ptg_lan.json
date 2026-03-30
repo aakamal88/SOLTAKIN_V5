@@ -1,0 +1,8 @@
+{
+    "mode": "DHCP",
+    "interface": "Wi-Fi",
+    "ip": "",
+    "subnet": "255.255.255.0",
+    "gateway": "",
+    "dns": ""
+}

@@ -1,15 +1,14 @@
 import streamlit as st
-import plotly.graph_objects as go
 import json
 import os
-import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SETTINGS_FILE = os.path.join(ROOT_DIR, "config", "settings.json")
 
+
 # =========================
-# SETTINGS
+# LOAD
 # =========================
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -19,6 +18,7 @@ def load_settings():
         except:
             return {}
     return {}
+
 
 # =========================
 # DATA
@@ -31,16 +31,15 @@ def get_data():
         "cell_liquid": d.get("cell_liquid", []),
     }
 
+
 def get_config():
     c = load_settings().get("battery_config", {})
     return {
-        "series": c.get("series", 10),
+        "series": c.get("series", 100),
         "voltage": c.get("voltage", 1.42)
     }
 
-# =========================
-# HELPER
-# =========================
+
 def normalize(v, s, default):
     if not v:
         return [default] * s
@@ -49,99 +48,116 @@ def normalize(v, s, default):
         v += [default] * (s - len(v))
     return v[:s]
 
-def voltage_color(v):
-    if v < 1.1: return "red"
-    elif v < 1.2: return "orange"
-    elif v < 1.35: return "yellow"
-    elif v < 1.42: return "green"
-    else: return "blue"
+
+# =========================
+# UI CARD PER CELL (WITH STYLE)
+# =========================
+def render_cell_card(cell_no, volt, temp, liquid, is_active):
+
+    key = f"C{cell_no}"
+
+    # 🎨 Style logic
+    if is_active:
+        bg = "#F5F5F5"
+        header_bg = "#E0E0E0"
+        text_color = "black"
+        v = f"{volt:.2f}"
+        t = f"{temp:.1f}"
+        l = f"{liquid:.1f}"
+    else:
+        bg = "#2B2B2B"
+        header_bg = "#1F1F1F"
+        text_color = "#AAAAAA"
+        v = t = l = "N/A"
+
+    # 🧱 CARD START
+    st.markdown(f"""
+    <div style="
+        background:{bg};
+        border-radius:12px;
+        padding:0;
+        margin-bottom:12px;
+        overflow:hidden;
+        border:1px solid #ddd;
+    ">
+    """, unsafe_allow_html=True)
+
+    # 🔋 HEADER BADGE (INSIDE CARD)
+    st.markdown(f"""
+    <div style="
+        background:{header_bg};
+        padding:8px 12px;
+        font-weight:bold;
+        color:{text_color};
+        border-bottom:1px solid #ccc;
+    ">
+        🔋 Cell {key}
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 📊 CONTENT
+    st.markdown("<div style='padding:10px;'>", unsafe_allow_html=True)
+
+    def row(label, value, unit):
+        c1, c2, c3 = st.columns([2,1,1])
+        c1.write(label)
+        c2.write(f"**{value}**")
+        c3.write(unit)
+
+    row("Voltage", v, "Vdc")
+    row("Temp", t, "°C")
+    row("Level", l, "%")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 🧱 CARD END
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =========================
 # MAIN
 # =========================
 def render_detail():
 
-    st_autorefresh(interval=500, key="detail_refresh")  # 5 detik
+    st_autorefresh(interval=60000, key="refresh")
+
     data = get_data()
     cfg = get_config()
 
-    series = cfg["series"]
+    series = cfg["series"]   # ✅ dynamic dari settings.json
+    max_cells = 100          # total UI
 
-    voltages = normalize(data["cell_voltage"], series, cfg["voltage"])
-    temps = normalize(data["cell_temperature"], series, 30)
-    liquids = normalize(data["cell_liquid"], series, 80)
+    voltages = normalize(data["cell_voltage"], max_cells, cfg["voltage"])
+    temps = normalize(data["cell_temperature"], max_cells, 30)
+    liquids = normalize(data["cell_liquid"], max_cells, 80)
 
-    st.title("🔍 Realtime Cells Monitoring")
+    st.title(f"🔋 Cells Realtime Monitoring ({series} Active Cells)")
 
-    # =========================
-    # BACK BUTTON
-    # =========================
-    st.link_button("⬅️ Back to Dashboard", "http://localhost:8501")
+    cols_per_row = 5
+    rows = (max_cells + cols_per_row - 1) // cols_per_row
+
+    idx = 0
+    for r in range(rows):
+        cols = st.columns(cols_per_row)
+
+        for c in range(cols_per_row):
+            if idx < max_cells:
+
+                is_active = idx < series  # 🎯 logic utama
+
+                with cols[c]:
+                    render_cell_card(
+                        idx + 1,
+                        voltages[idx],
+                        temps[idx],
+                        liquids[idx],
+                        is_active
+                    )
+                    st.markdown("---")
+
+                idx += 1
 
 
-    # =========================
-    # VOLTAGE
-    # =========================
-    st.markdown("---")
-    st.subheader("🔋 Cells Voltage Monitoring")
-
-    fig = go.Figure(data=[go.Bar(
-        x=[f"C{i + 1}" for i in range(len(voltages))],
-        y=voltages,
-        marker_color=[voltage_color(v) for v in voltages]
-    )])
-
-    fig.update_layout(
-        yaxis=dict(range=[0, 1.6])
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-        key=f"cell_voltage_{len(voltages)}"
-    )
-
-    # =========================
-    # TEMPERATURE
-    # =========================
-    st.subheader("🌡 Cells Temperature Monitoring")
-
-    fig_temp = go.Figure(data=[go.Scatter(
-        x=[f"C{i + 1}" for i in range(len(temps))],
-        y=temps,
-        mode="lines+markers"
-    )])
-
-    # SET RANGE
-    fig_temp.update_layout(
-        yaxis=dict(range=[15, 50])  # sesuaikan kebutuhan
-    )
-
-    st.plotly_chart(
-        fig_temp,
-        use_container_width=True,
-        key=f"cell_temp_{len(temps)}"
-    )
-
-    # =========================
-    # LIQUID
-    # =========================
-    st.subheader("🧪 Cells Liquid Level Monitoring")
-
-    fig_liquid = go.Figure(data=[go.Bar(
-        x=[f"C{i + 1}" for i in range(len(liquids))],
-        y=liquids
-    )])
-
-    # SET RANGE
-    fig_liquid.update_layout(
-        yaxis=dict(range=[0, 100])
-    )
-
-    st.plotly_chart(
-        fig_liquid,
-        use_container_width=True,
-        key=f"cell_liquid_{len(liquids)}"
-    )
-
+# =========================
+# RUN
+# =========================
 render_detail()

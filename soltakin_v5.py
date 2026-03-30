@@ -18,6 +18,7 @@ from features.settings.battery_settings import render_battery_settings
 from features.realtime.detail import render_detail
 from features.settings.systems import render_system_settings
 from features.alarm.notification import render_notification
+from features.alarm_status.alarm_status import render_alarm_status
 
 # =========================
 # CONFIG
@@ -308,6 +309,9 @@ menu = st.session_state.menu
 
 if menu == "Dashboard":
     render_dashboard()
+
+elif menu == "Alarm Status":
+    render_alarm_status()
 
 elif menu == "Analyze":
     render_analyze()

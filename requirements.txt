@@ -4,3 +4,4 @@ streamlit-folium
 plotly
 pandas
 streamlit-autorefresh
+streamlit-extras

@@ -58,7 +58,7 @@ def avg(arr, default=0):
 # =========================
 def render_analyze():
 
-    st_autorefresh(interval=36000, key="detail_refresh")  # 5 detik
+    st_autorefresh(interval=1000, key="detail_refresh")  # 5 detik
     st.title("🧠 Data Input From Controller ")
     settings = load()
     data = settings.get("data", {})
