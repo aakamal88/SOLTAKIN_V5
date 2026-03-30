@@ -727,7 +727,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    st_autorefresh(interval=5000, key="dashboard_refresh")
+    st_autorefresh(interval=60000, key="dashboard_refresh")
     data = get_data()
     cfg = get_config()
 
