@@ -142,36 +142,41 @@ def get_config():
     c = load_settings().get("battery_config", {})
     return {"series": c.get("series", 0)}
 
+
 def render_cell_tables(series, data):
-    if series <= 0:
-        st.warning("Jumlah battery series belum diset")
-        return
+    TOTAL_CELL = 100  # 🔥 FIX 100 FRAME
+    MAX_COL = 5
 
     st.markdown("### 🔋 Cells Performance")
 
-    MAX_COL = 5
-
-    # 🔥 AMBIL DATA BARU (INI KUNCINYA)
     table_soc = data.get("table_soc", [])
     table_soh = data.get("table_soh", [])
     table_rint = data.get("table_rint", [])
     table_temp = data.get("table_temp", [])
     table_lvl = data.get("table_lvl", [])
 
-    for row_start in range(0, series, MAX_COL):
-        row_cells = range(row_start, min(row_start + MAX_COL, series))
+    for row_start in range(0, TOTAL_CELL, MAX_COL):
+        row_cells = range(row_start, min(row_start + MAX_COL, TOTAL_CELL))
         cols = st.columns(len(row_cells))
 
         for col, i in zip(cols, row_cells):
             cell_num = i + 1
 
-            # SAFE ACCESS
-            soc_val = f"{int(table_soc[i])}" if i < len(table_soc) else "-"
-            soh_val = f"{int(table_soh[i])}" if i < len(table_soh) else "-"
-            lvl_val = f"{int(table_lvl[i])}" if i < len(table_lvl) else "-"
+            is_active = i < series
 
-            rint_val = f"{table_rint[i]:.2f}" if i < len(table_rint) else "-"
-            temp_val = f"{table_temp[i]:.1f}" if i < len(table_temp) else "-"
+            # =========================
+            # 🔥 VALUE LOGIC
+            # =========================
+            if is_active:
+                soc_val = f"{int(table_soc[i])}" if i < len(table_soc) else "-"
+                soh_val = f"{int(table_soh[i])}" if i < len(table_soh) else "-"
+                lvl_val = f"{int(table_lvl[i])}" if i < len(table_lvl) else "-"
+
+                rint_val = f"{table_rint[i]:.2f}" if i < len(table_rint) else "-"
+                temp_val = f"{table_temp[i]:.1f}" if i < len(table_temp) else "-"
+            else:
+                soc_val = soh_val = lvl_val = "-"
+                rint_val = temp_val = "-"
 
             with col:
                 st.markdown(f"**Cell {cell_num}**")
@@ -189,9 +194,12 @@ def render_cell_tables(series, data):
                 }
 
                 # =========================
-                # 🎨 STATUS COLOR LOGIC
+                # 🎨 COLOR FUNCTION
                 # =========================
                 def get_cell_color(param, val):
+                    if not is_active:
+                        return "#6b7280"  # abu untuk inactive
+
                     try:
                         val = float(val)
                     except:
@@ -239,88 +247,100 @@ def render_cell_tables(series, data):
 
                     return "#22c55e"
 
-                # =========================
-                # 🎨 CUSTOM TABLE UI
-                # =========================
                 rows_html = ""
 
                 for p, v, u in zip(table_data["Parameter"], table_data["Value"], table_data["Unit"]):
                     color = get_cell_color(p, v)
 
-                    # =========================
-                    # 🚨 DETECT STATUS (UNTUK BLINK)
-                    # =========================
-                    blink_class = ""
-
-                    try:
-                        val = float(v)
-
-                        if p == "SoC":
-                            if val < 10:
-                                blink_class = "blink-alert"
-                            elif val < 20:
-                                blink_class = "blink-critical"
-                            elif val < 50:
-                                blink_class = "blink-warning"
-
-                        elif p == "SoH":
-                            if val < 30:
-                                blink_class = "blink-alert"
-                            elif val < 50:
-                                blink_class = "blink-critical"
-                            elif val < 80:
-                                blink_class = "blink-warning"
-
-                        elif p == "Rint":
-                            if val > 1.8:
-                                blink_class = "blink-alert"
-                            elif val > 1.5:
-                                blink_class = "blink-critical"
-                            elif val > 1.1:
-                                blink_class = "blink-warning"
-
-                        elif p == "Temp":
-                            if val > 48:
-                                blink_class = "blink-alert"
-                            elif val > 45:
-                                blink_class = "blink-critical"
-                            elif val > 35:
-                                blink_class = "blink-warning"
-
-                    except:
-                        pass
+                    display_val = v if is_active else "Data N/A"
 
                     rows_html += f"""
                     <tr>
-                        <td style="
-                            padding:6px;
-                            text-align:left;
-                            color:#374151;
-                            font-weight:500;
-                        ">
+                        <td style="padding:6px;text-align:left;font-weight:500;color:#374151;">
                             {p}
                         </td>
 
-                        <td class="{blink_class}" style="
+                        <td style="
                             padding:6px;
                             text-align:right;
                             font-weight:600;
                             color:{color};
                         ">
-                            {v}
+                            {display_val}
                         </td>
 
                         <td style="padding:6px;text-align:right;color:#9ca3af;">
-                            {u}
+                            {u if is_active else "-"}
                         </td>
                     </tr>
                     """
 
+                # =========================
+                # 🎨 Frame if Upset
+                # =========================
+
+                def is_upset(soc, soh, rint, temp):
+                    try:
+                        soc = float(soc)
+                        soh = float(soh)
+                        rint = float(rint)
+                        temp = float(temp)
+                    except:
+                        return False, None
+
+                    if soc < 10 or soh < 30 or rint > 1.8 or temp > 48:
+                        return True, "ALERT"
+
+                    if soc < 20 or soh < 50 or rint > 1.5 or temp > 45:
+                        return True, "CRITICAL"
+
+                    if soc < 50 or soh < 80 or rint > 1.1 or temp > 35:
+                        return True, "WARNING"
+
+                    return False, None
+
+                def get_upset_style(level):
+                    if level == "ALERT":
+                        return "background-color:rgba(127,29,29,0.25); border:1px solid #7f1d1d; box-shadow:0 0 12px #7f1d1d;"
+                    elif level == "CRITICAL":
+                        return "background-color:rgba(239,68,68,0.25); border:1px solid #ef4444; box-shadow:0 0 10px #ef4444;"
+                    elif level == "WARNING":
+                        return "background-color:rgba(245,158,11,0.20); border:1px solid #f59e0b;"
+                    return ""
+
+                # =========================
+                # 🔥 DETEKSI UPSET
+                # =========================
+                if is_active:
+                    upset, level = is_upset(soc_val, soh_val, rint_val, temp_val)
+                else:
+                    upset, level = False, None
+
+                # =========================
+                # 🎨 FRAME STYLE
+                # =========================
+                if not is_active:
+                    final_style = """
+                        background-color:#111827 !important;
+                        border:1px solid #374151;
+                        box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
+                    """
+                else:
+                    base_style = "background-color:#e5e7eb;"
+                    upset_style = get_upset_style(level) if upset else ""
+                    final_style = base_style + upset_style
+
+                text_opacity = "1" if is_active else "0.5"
+
+                # =========================
+                # 🎨 HTML RENDER (FIXED)
+                # =========================
                 table_html = f"""
                 <div style="
-                    background:#e5e7eb;
+                    {final_style}
                     border-radius:12px;
                     padding:10px;
+                    opacity:{text_opacity};
                     box-shadow:0 4px 12px rgba(0,0,0,0.4);
                 ">
                     <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -727,7 +747,7 @@ def create_folium_map(sites, style):
 def render_dashboard():
 
     st.set_page_config(layout="wide")
-    st_autorefresh(interval=60000, key="dashboard_refresh")
+    st_autorefresh(interval=5000, key="dashboard_refresh")
     data = get_data()
     cfg = get_config()
 
